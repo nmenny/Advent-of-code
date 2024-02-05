@@ -114,7 +114,7 @@ fs.readFile("./input.txt", "utf8", (err, data) => {
 		return;
 	}
 
-	const dataSplt = data.split("\n");
+	const dataSplt = data.split("\n").filter(d => d.length > 0);
 
 	const nav = new Navigation();
 	const navV2 = new NavigationV2();
@@ -122,7 +122,7 @@ fs.readFile("./input.txt", "utf8", (err, data) => {
 	nav.addInstructions(dataSplt[0]);
 	navV2.addInstructions(dataSplt[0]);
 
-	for(let node of dataSplt.slice(2)) {
+	for(let node of dataSplt.slice(1)) {
 		const nodeInfo = extractNodeInfo(node);
 		nav.addNode(nodeInfo.nodeName, nodeInfo.leftNode, nodeInfo.rightNode);
 		navV2.addNode(nodeInfo.nodeName, nodeInfo.leftNode, nodeInfo.rightNode);

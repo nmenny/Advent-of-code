@@ -109,7 +109,7 @@ fs.readFile("./input.txt", "utf8", (err, data) => {
         throw err;
     }
 
-    let datasplt = data.split("\n");
+    let datasplt = data.split("\n").filter(d => d.length > 0);
 
     const dataMaps = [];
     let idxSplt = 0;
