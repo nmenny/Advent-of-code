@@ -21,3 +21,4 @@ The days done :
 16) [Sue](./d16)
 17) [The eggnog problem](./d17)
 18) [GIF with lights](./d18) 
+19) [Molecular synthesizer](./d19) **Must be optimized to get the 2nd part of the challenge**
