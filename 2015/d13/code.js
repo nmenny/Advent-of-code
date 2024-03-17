@@ -3,33 +3,34 @@ const readline = require("readline");
 const events = require("events");
 
 function getArrangement(arr) {
-
-    if(arr.length === 0) {
+    if (arr.length === 0) {
         return [[]];
     }
 
-    return arr.flatMap(x => {
-        return getArrangement(arr.filter(v => {
-            return v !== x;
-        })).map(v => { 
-            return [x, ...v] 
+    return arr.flatMap((x) => {
+        return getArrangement(
+            arr.filter((v) => {
+                return v !== x;
+            })
+        ).map((v) => {
+            return [x, ...v];
         });
     });
 }
 
 class Table {
     constructor() {
-        this.invited = {}
+        this.invited = {};
     }
 
     addInvited(invitedName) {
-        if(!(invitedName in this.invited)) {
-            this.invited[invitedName] = {}
+        if (!(invitedName in this.invited)) {
+            this.invited[invitedName] = {};
         }
     }
 
     addHappinessInfluence(invited, happinessGain, nextTo) {
-        if(!(invited in this.invited)) {
+        if (!(invited in this.invited)) {
             this.addInvited(invited);
         }
         this.invited[invited][nextTo] = happinessGain;
@@ -40,7 +41,7 @@ class Table {
 
         const happiness = [];
 
-        for(let oneArr of arr) {
+        for (let oneArr of arr) {
             happiness.push(this.checkHappiness(oneArr));
         }
 
@@ -50,7 +51,7 @@ class Table {
     checkHappiness(arr) {
         let happiness = 0;
 
-        for(let arrIdx = 0; arrIdx < arr.length; arrIdx++) {
+        for (let arrIdx = 0; arrIdx < arr.length; arrIdx++) {
             happiness += this.happinessLevel(arr[arrIdx], arr[(arrIdx + 1) % arr.length]);
         }
 
@@ -65,8 +66,8 @@ class Table {
         const allTable = this.allTablePossible();
 
         let idxBest = 0;
-        for(let hapIdx = 0; hapIdx < allTable[1].length; hapIdx++) {
-            if(allTable[1][hapIdx] > allTable[1][idxBest]) {
+        for (let hapIdx = 0; hapIdx < allTable[1].length; hapIdx++) {
+            if (allTable[1][hapIdx] > allTable[1][idxBest]) {
                 idxBest = hapIdx;
             }
         }
@@ -80,12 +81,12 @@ function decode(line) {
 
     const invited1 = lineSplit[0];
     let invited2 = lineSplit[lineSplit.length - 1];
-    invited2 = invited2.slice(0, invited2.length-1);
+    invited2 = invited2.slice(0, invited2.length - 1);
 
     const gainOrLose = lineSplit[2];
     let happiness = parseInt(lineSplit[3], 10);
 
-    if(gainOrLose === "lose") {
+    if (gainOrLose === "lose") {
         happiness *= -1;
     }
 
@@ -93,15 +94,16 @@ function decode(line) {
 }
 
 (async () => {
-
-    const rl = readline.createInterface({ input: fs.createReadStream("./input.txt") });
+    const rl = readline.createInterface({
+        input: fs.createReadStream("./input.txt"),
+    });
 
     const table = new Table();
 
     rl.on("line", (line) => {
         const decodedLine = decode(line);
 
-        if(line.length === 0) {
+        if (line.length === 0) {
             return;
         }
 
@@ -114,18 +116,17 @@ function decode(line) {
 
     // ---
 
-    for(const invited in table.invited) {
-        if(invited === "Me") continue;
+    for (const invited in table.invited) {
+        if (invited === "Me") continue;
         const strOtherGain = `${invited} would gain 0 happiness units by sitting next to Me.`;
         const strMyGain = `Me would gain 0 happiness units by sitting next to ${invited}.`;
 
-        for(const str of [strOtherGain, strMyGain]) {
+        for (const str of [strOtherGain, strMyGain]) {
             const decodedLine = decode(str);
-    
+
             table.addHappinessInfluence(...decodedLine);
         }
     }
 
     console.log(`Solution 2 : ${table.tableWithBestHappiness()}`);
-
 })();

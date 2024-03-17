@@ -30,7 +30,7 @@ with open("./input.txt", "r") as f:
             delivery_map[(x, y)] = 1
         else:
             delivery_map[(x, y)] += 1
-    
+
     print(f"Solution 1 : {len(delivery_map)}")
 
 with open("./input.txt", "r") as f:
@@ -60,5 +60,5 @@ with open("./input.txt", "r") as f:
             delivery_map[(x, y)] += 1
 
         santa_move ^= True
-    
+
     print(f"Solution 2 : {len(delivery_map)}")

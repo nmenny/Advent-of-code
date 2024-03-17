@@ -2,7 +2,7 @@
 
 See [Advent of code 2015 page](https://adventofcode.com/2015) for the complete instructions.
 
-The days done : 
+The days done :
 1) [The elevator problem](./d1)
 2) [The wrapping paper problem](./d2)
 3) [Present delivery !](./d3)
@@ -20,6 +20,6 @@ The days done :
 15) [Cooking lesson](./d15)
 16) [Sue](./d16)
 17) [The eggnog problem](./d17)
-18) [GIF with lights](./d18) 
+18) [GIF with lights](./d18)
 19) [Molecular synthesizer](./d19) **Must be optimized to get the 2nd part of the challenge**
 20) [EDS - Elfe Delivery System](./d20)

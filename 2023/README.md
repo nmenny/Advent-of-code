@@ -2,7 +2,7 @@
 
 See [Advent of code 2023 page](https://adventofcode.com/2023) for the instructions.
 
-The days done : 
+The days done :
 1) [Trebuchet](./d1)
 2) [The cube game](./d2)
 3) [Broken engine](./d3)

@@ -5,15 +5,7 @@ const events = require("events");
 const NB_CARDS_PER_HAND = 5;
 const cardsLabels = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"];
 const cardsLabelsWithJoker = ["J", "2", "3", "4", "5", "6", "7", "8", "9", "T", "Q", "K", "A"];
-const handTypes = [
-    isHighCard,
-    isOnePair,
-    isTwoPair,
-    isThreeOfKind,
-    isFullHouse,
-    isFourOfKind,
-    isFiveOfKind
-];
+const handTypes = [isHighCard, isOnePair, isTwoPair, isThreeOfKind, isFullHouse, isFourOfKind, isFiveOfKind];
 
 // ---------------
 // Utils
@@ -27,13 +19,13 @@ function extractDataFromLine(line) {
 function getNbCardsWithSameLabel(hand) {
     const handSorted = hand.split("").toSorted();
     let cardsWithSameLabels = {};
-    
+
     let currCard = handSorted[0];
     let currCardCnt = 1;
 
-    for(let cardIdx = 1; cardIdx < handSorted.length; cardIdx++) {
-        if(handSorted[cardIdx] !== currCard) {
-            if(!(currCardCnt in cardsWithSameLabels)) {
+    for (let cardIdx = 1; cardIdx < handSorted.length; cardIdx++) {
+        if (handSorted[cardIdx] !== currCard) {
+            if (!(currCardCnt in cardsWithSameLabels)) {
                 cardsWithSameLabels[currCardCnt] = [];
             }
             cardsWithSameLabels[currCardCnt].push(currCard);
@@ -45,23 +37,23 @@ function getNbCardsWithSameLabel(hand) {
         }
     }
 
-    if(!(currCardCnt in cardsWithSameLabels)) {
+    if (!(currCardCnt in cardsWithSameLabels)) {
         cardsWithSameLabels[currCardCnt] = [];
     }
     cardsWithSameLabels[currCardCnt].push(currCard);
 
-    return cardsWithSameLabels
+    return cardsWithSameLabels;
 }
 
-function *getCombiOfCards(arr, nbEltInCombi) {
-    if(nbEltInCombi === 1) {
-        for(let elt of arr) {
+function* getCombiOfCards(arr, nbEltInCombi) {
+    if (nbEltInCombi === 1) {
+        for (let elt of arr) {
             yield [elt];
         }
     } else {
-        for(let arrIdx in arr) {
-            for(combi of getCombiOfCards(arr.slice(arrIdx), nbEltInCombi-1)) {
-                yield [arr[arrIdx]].concat(combi)
+        for (let arrIdx in arr) {
+            for (const combi of getCombiOfCards(arr.slice(arrIdx), nbEltInCombi - 1)) {
+                yield [arr[arrIdx]].concat(combi);
             }
         }
     }
@@ -73,16 +65,9 @@ function *getCombiOfCards(arr, nbEltInCombi) {
 function isXOfKind(cardsWithSameLabels, x) {
     return (
         cardsWithSameLabels[x] !== undefined &&
-        cardsWithSameLabels[x].length === 1 && 
-        (
-            (
-                x === NB_CARDS_PER_HAND
-            ) ||
-            (
-                cardsWithSameLabels[1] !== undefined &&
-                cardsWithSameLabels[1].length === NB_CARDS_PER_HAND - x
-            )
-        )
+        cardsWithSameLabels[x].length === 1 &&
+        (x === NB_CARDS_PER_HAND ||
+            (cardsWithSameLabels[1] !== undefined && cardsWithSameLabels[1].length === NB_CARDS_PER_HAND - x))
     );
 }
 
@@ -95,10 +80,7 @@ function isFourOfKind(cardsWithSameLabels) {
 }
 
 function isFullHouse(cardsWithSameLabels) {
-    return (
-        cardsWithSameLabels[3] !== undefined && 
-        cardsWithSameLabels[2] !== undefined
-    );
+    return cardsWithSameLabels[3] !== undefined && cardsWithSameLabels[2] !== undefined;
 }
 
 function isThreeOfKind(cardsWithSameLabels) {
@@ -107,7 +89,7 @@ function isThreeOfKind(cardsWithSameLabels) {
 
 function isTwoPair(cardsWithSameLabels) {
     return (
-        cardsWithSameLabels[2] !== undefined && 
+        cardsWithSameLabels[2] !== undefined &&
         cardsWithSameLabels[2].length === 2 &&
         cardsWithSameLabels[1] !== undefined
     );
@@ -118,10 +100,7 @@ function isOnePair(cardsWithSameLabels) {
 }
 
 function isHighCard(cardsWithSameLabels) {
-    return (
-        cardsWithSameLabels[1] !== undefined && 
-        cardsWithSameLabels[1].length === NB_CARDS_PER_HAND
-    );
+    return cardsWithSameLabels[1] !== undefined && cardsWithSameLabels[1].length === NB_CARDS_PER_HAND;
 }
 
 // --------------------
@@ -132,10 +111,10 @@ function getCardStrength(cardLabel) {
 }
 
 function getHandStrength(hand) {
-    const diffLabels = getNbCardsWithSameLabel(hand)
+    const diffLabels = getNbCardsWithSameLabel(hand);
 
-    for(let typeIdx = 0; typeIdx < handTypes.length; typeIdx++) {
-        if(handTypes[typeIdx](diffLabels)) {
+    for (let typeIdx = 0; typeIdx < handTypes.length; typeIdx++) {
+        if (handTypes[typeIdx](diffLabels)) {
             return typeIdx;
         }
     }
@@ -144,9 +123,9 @@ function getHandStrength(hand) {
 }
 
 function isBetterHand(hand1, hand2) {
-    if(getHandStrength(hand1) === getHandStrength(hand2)) {
-        for(let cardIdx in hand1) {
-            if(getCardStrength(hand1[cardIdx]) === getCardStrength(hand2[cardIdx])) {
+    if (getHandStrength(hand1) === getHandStrength(hand2)) {
+        for (let cardIdx in hand1) {
+            if (getCardStrength(hand1[cardIdx]) === getCardStrength(hand2[cardIdx])) {
                 continue;
             }
 
@@ -166,57 +145,56 @@ function getHandStrengthWithJoker(hand) {
     // Extract the non joker cards
     let nbJoker = 0;
     let handWithoutJoker = "";
-    for(let card of hand) {
-        if(card === "J") {
+    for (let card of hand) {
+        if (card === "J") {
             nbJoker++;
             continue;
         }
 
         handWithoutJoker += card;
-
     }
 
     let bestHandStrength = getHandStrength(hand);
 
-    if(nbJoker === 0 || bestHandStrength === 6)
-        return bestHandStrength;
+    if (nbJoker === 0 || bestHandStrength === 6) return bestHandStrength;
 
     // If there are joker cards
 
     // Get all the possible cards for the jokers
-    const diffLabels = getNbCardsWithSameLabel(handWithoutJoker)
-    let nbPossCards = Object.values(diffLabels).reduce((acc, v) => { return acc.concat(v); }, []);
-    for(let i = 0; i < nbJoker; i++) {
-        for(let cardIdx = 0; cardIdx < cardsLabels.length; cardIdx++) {
-            if(nbPossCards.indexOf(cardsLabels[cardIdx]) === -1) {
+    const diffLabels = getNbCardsWithSameLabel(handWithoutJoker);
+    let nbPossCards = Object.values(diffLabels).reduce((acc, v) => {
+        return acc.concat(v);
+    }, []);
+    for (let i = 0; i < nbJoker; i++) {
+        for (let cardIdx = 0; cardIdx < cardsLabels.length; cardIdx++) {
+            if (nbPossCards.indexOf(cardsLabels[cardIdx]) === -1) {
                 nbPossCards.push(cardsLabels[cardIdx]);
                 break;
             }
         }
     }
 
-    for(let combi of getCombiOfCards(nbPossCards, nbJoker)) {
+    for (let combi of getCombiOfCards(nbPossCards, nbJoker)) {
         const combiHand = combi.join("");
         const handStrength = getHandStrength(handWithoutJoker + combiHand);
-        if(handStrength > bestHandStrength) {
+        if (handStrength > bestHandStrength) {
             bestHandStrength = handStrength;
         }
 
-        if(bestHandStrength === 6) {
+        if (bestHandStrength === 6) {
             break;
         }
     }
 
     return bestHandStrength;
-
 }
 
 function isBetterHandWithJoker(hand1, hand2) {
     const hand1Strength = getHandStrengthWithJoker(hand1);
     const hand2Strength = getHandStrengthWithJoker(hand2);
-    if(hand1Strength === hand2Strength) {
-        for(let cardIdx in hand1) {
-            if(getCardStrengthWithJoker(hand1[cardIdx]) === getCardStrengthWithJoker(hand2[cardIdx])) {
+    if (hand1Strength === hand2Strength) {
+        for (let cardIdx in hand1) {
+            if (getCardStrengthWithJoker(hand1[cardIdx]) === getCardStrengthWithJoker(hand2[cardIdx])) {
                 continue;
             }
 
@@ -228,7 +206,6 @@ function isBetterHandWithJoker(hand1, hand2) {
     return hand1Strength > hand2Strength;
 }
 
-
 // --------------------
 // The game
 
@@ -239,17 +216,16 @@ class GameSet {
     }
 
     searchInsertIndex(hand) {
-        const handValue = 0
         let lower = 0;
         let upper = this.cards.length;
 
         let idx = 0;
 
-        while(upper !== lower) {
+        while (upper !== lower) {
             idx = Math.floor((lower + upper) / 2);
             const currHand = this.cards[idx];
 
-            if(this.cmpCards(hand, currHand)) {
+            if (this.cmpCards(hand, currHand)) {
                 lower = idx + 1;
             } else {
                 upper = idx;
@@ -260,7 +236,7 @@ class GameSet {
     }
 
     cmpCards(hand1, hand2) {
-        return isBetterHand(hand1, hand2)
+        return isBetterHand(hand1, hand2);
     }
 
     insertNewHand(hand, bid) {
@@ -274,15 +250,13 @@ class GameSet {
         let lastHand = "";
         let res = 0;
 
-        for(let bidIdx = 0; bidIdx < this.bids.length; bidIdx++) {
-
-            if(lastHand !== this.cards[bidIdx]) {
+        for (let bidIdx = 0; bidIdx < this.bids.length; bidIdx++) {
+            if (lastHand !== this.cards[bidIdx]) {
                 currIdx = bidIdx;
                 lastHand = this.cards[bidIdx];
             }
 
             res += this.bids[bidIdx] * (currIdx + 1);
-
         }
 
         return res;
@@ -290,20 +264,21 @@ class GameSet {
 }
 
 class GameSetWithJoker extends GameSet {
-    constructor() { super(); }
+    constructor() {
+        super();
+    }
     cmpCards(hand1, hand2) {
-        return isBetterHandWithJoker(hand1, hand2)
+        return isBetterHandWithJoker(hand1, hand2);
     }
 }
 
 (async () => {
-
     const rl = readline.createInterface(fs.createReadStream("./input.txt"));
 
     const gs = new GameSet();
     const gsJ = new GameSetWithJoker();
 
-    rl.on("line", line => {
+    rl.on("line", (line) => {
         const data = extractDataFromLine(line);
         gs.insertNewHand(data.hand, data.bid);
         gsJ.insertNewHand(data.hand, data.bid);
@@ -313,5 +288,4 @@ class GameSetWithJoker extends GameSet {
 
     console.log("Solution 1 : ", gs.computeTotal());
     console.log("Solution 2 : ", gsJ.computeTotal());
-
 })();

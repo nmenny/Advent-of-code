@@ -16,14 +16,14 @@ class Reindeer {
 
     action() {
         this.t++;
-        if(this.exhausted) {
-            if(this.t >= this.restTime) {
+        if (this.exhausted) {
+            if (this.t >= this.restTime) {
                 this.t = 0;
                 this.exhausted = false;
             }
         } else {
-            this.distanceTraveled+= this.speed;
-            if(this.t >= this.runTime) {
+            this.distanceTraveled += this.speed;
+            if (this.t >= this.runTime) {
                 this.t = 0;
                 this.exhausted = true;
             }
@@ -43,28 +43,28 @@ function lineToReindeer(line) {
     const runTime = parseInt(lineSplt[6], 10);
     const restTime = parseInt(lineSplt[13], 10);
 
-    return new Reindeer(reindeerName, speed, runTime, restTime)
+    return new Reindeer(reindeerName, speed, runTime, restTime);
 }
 
 function getReindeersMaxDist(reindeers) {
-    return Math.max(...reindeers.map(reindeer => reindeer.distanceTraveled ));
+    return Math.max(...reindeers.map((reindeer) => reindeer.distanceTraveled));
 }
 
 function getReindeersMaxPoint(reindeers) {
-    return Math.max(...reindeers.map(reindeer => reindeer.points ));
+    return Math.max(...reindeers.map((reindeer) => reindeer.points));
 }
 
 function givePointsToLeadingReindeers(reindeers) {
     const maxDistTraveled = getReindeersMaxDist(reindeers);
-    reindeers.forEach(reindeer => {
-        if(reindeer.distanceTraveled === maxDistTraveled) {
+    reindeers.forEach((reindeer) => {
+        if (reindeer.distanceTraveled === maxDistTraveled) {
             reindeer.givePoints(1);
         }
     });
 }
 
 fs.readFile("./input.txt", "utf8", (err, data) => {
-    if(err) {
+    if (err) {
         console.error(err);
         return;
     }
@@ -72,14 +72,14 @@ fs.readFile("./input.txt", "utf8", (err, data) => {
     const dataSplt = data.split("\n");
     const reindeers = [];
 
-    for(let line of dataSplt) {
+    for (let line of dataSplt) {
         reindeers.push(lineToReindeer(line));
     }
 
     let t = 0;
 
-    while(t < simulationTime) {
-        reindeers.forEach(reindeer => reindeer.action() );
+    while (t < simulationTime) {
+        reindeers.forEach((reindeer) => reindeer.action());
         givePointsToLeadingReindeers(reindeers);
         t++;
     }

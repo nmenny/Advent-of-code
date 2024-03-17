@@ -12,8 +12,8 @@ const sueSendsGift = {
     goldfish: 5,
     trees: 3,
     cars: 2,
-    perfumes: 1
-}
+    perfumes: 1,
+};
 
 class MFCSAM {
     constructor() {
@@ -25,18 +25,17 @@ class MFCSAM {
     }
 
     isCompliant(autSueInfo) {
-        for(const autSueCaract in autSueInfo) {
-            if(autSueInfo[autSueCaract] !== this.searchInfo[autSueCaract])
-                return false
+        for (const autSueCaract in autSueInfo) {
+            if (autSueInfo[autSueCaract] !== this.searchInfo[autSueCaract]) return false;
         }
 
         return true;
     }
 
     isCompliantV2(autSueInfo) {
-        for(const autSueCaract in autSueInfo) {
+        for (const autSueCaract in autSueInfo) {
             let isOk = false;
-            switch(autSueCaract) {
+            switch (autSueCaract) {
                 case "cats":
                 case "trees":
                     isOk = autSueInfo[autSueCaract] > this.searchInfo[autSueCaract];
@@ -49,7 +48,7 @@ class MFCSAM {
                     isOk = autSueInfo[autSueCaract] === this.searchInfo[autSueCaract];
             }
 
-            if(!isOk) return false
+            if (!isOk) return false;
         }
 
         return true;
@@ -58,10 +57,10 @@ class MFCSAM {
 
 function extractData(line) {
     const whichSue = line.slice(0, line.indexOf(":"));
-    const sueCaracteristics = line.slice(line.indexOf(":")+1);
-    
+    const sueCaracteristics = line.slice(line.indexOf(":") + 1);
+
     const convertedData = {};
-    for(const caract of sueCaracteristics.split(",")) {
+    for (const caract of sueCaracteristics.split(",")) {
         const splittedCaract = caract.split(":");
         convertedData[splittedCaract[0].trim()] = parseInt(splittedCaract[1]);
     }
@@ -70,23 +69,24 @@ function extractData(line) {
 }
 
 (async () => {
-    const rl = readline.createInterface({ input: fs.createReadStream("./input.txt") });
+    const rl = readline.createInterface({
+        input: fs.createReadStream("./input.txt"),
+    });
     const dataExtractor = new MFCSAM();
     dataExtractor.defineSearchData(sueSendsGift);
 
     rl.on("line", (line) => {
-        if(line.length === 0) return;
+        if (line.length === 0) return;
 
         const autSueInfo = extractData(line);
 
-        if(dataExtractor.isCompliant(autSueInfo[1])) {
+        if (dataExtractor.isCompliant(autSueInfo[1])) {
             console.log(`Solution 1 : ${autSueInfo[0]}`);
         }
 
-        if(dataExtractor.isCompliantV2(autSueInfo[1])) {
+        if (dataExtractor.isCompliantV2(autSueInfo[1])) {
             console.log(`Solution 2 : ${autSueInfo[0]}`);
         }
-
     });
 
     await events.once(rl, "close");

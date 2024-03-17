@@ -3,7 +3,7 @@ import hashlib
 
 def getLowestNumberProducingNZeroesHash(n):
     trailingInt = 0
-    
+
     result = hashlib.md5((key + str(trailingInt)).encode())
     hexHash = result.hexdigest()
 

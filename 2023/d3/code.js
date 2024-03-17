@@ -15,9 +15,7 @@ const CAR = 2;
 const NB_ADJACENT = 3;
 const PROD_NB_ADJACENT = 4;
 
-
 class DataProcessor {
-
     constructor() {
         this.sumPartNb = 0;
         this.sumGears = 0;
@@ -29,31 +27,31 @@ class DataProcessor {
     processLine(line) {
         this.currY++;
         let number = [0, -1, []];
-        for(let currX in line) {
+        for (let currX in line) {
             const car = line[currX];
-            if(car === '.') {
-                if(number[Xs].length !== 0) {
+            if (car === ".") {
+                if (number[Xs].length !== 0) {
                     this.numbers.push(number);
-                    number = [0, -1, []]
+                    number = [0, -1, []];
                 }
                 continue;
             }
 
             const carInt = parseInt(car, 10);
-            if(!isNaN(carInt)) {
+            if (!isNaN(carInt)) {
                 number[VALUE] = number[0] * 10 + carInt;
                 number[Y] = this.currY;
                 number[Xs].push(parseInt(currX, 10));
             } else {
-                if(number[Xs].length !== 0) {
+                if (number[Xs].length !== 0) {
                     this.numbers.push(number);
-                    number = [0, -1, []]
+                    number = [0, -1, []];
                 }
                 this.symbols.push([parseInt(currX, 10), this.currY, car, 0, 1]);
             }
         }
 
-        if(number[Xs].length !== 0) {
+        if (number[Xs].length !== 0) {
             this.numbers.push(number);
         }
 
@@ -63,11 +61,10 @@ class DataProcessor {
     checkAroundNumbers() {
         this.emptyUnusedLines();
 
-        for(let sbIdx in this.symbols) {
-
+        for (let sbIdx in this.symbols) {
             const adjacentNumbersIdx = this.checkAroundSymbolAt(sbIdx);
 
-            for(let nbIdx of adjacentNumbersIdx) {
+            for (let nbIdx of adjacentNumbersIdx) {
                 this.sumPartNb += this.numbers[nbIdx][VALUE];
             }
 
@@ -76,24 +73,22 @@ class DataProcessor {
     }
 
     checkAroundSymbolAt(idxSymb) {
-        if(idxSymb < 0 || idxSymb >= this.symbols.length) {
+        if (idxSymb < 0 || idxSymb >= this.symbols.length) {
             return [];
         }
 
         let adjacentNbIdx = [];
         const symb = this.symbols[idxSymb];
-        const symbX = symb[X]
+        const symbX = symb[X];
         const symbY = symb[Y];
-        for(let y of [symbY-1, symbY, symbY+1]) {
-            if(y < 0)
-                continue;
+        for (let y of [symbY - 1, symbY, symbY + 1]) {
+            if (y < 0) continue;
 
-            for(let x of [symbX-1, symbX, symbX+1]) {
-                if(x < 0 || (y == symbY && x == symbX))
-                    continue;
+            for (let x of [symbX - 1, symbX, symbX + 1]) {
+                if (x < 0 || (y == symbY && x == symbX)) continue;
 
                 const nbAtXY = this.numberAt(x, y);
-                if(nbAtXY !== -1 && adjacentNbIdx.indexOf(nbAtXY) === -1) {
+                if (nbAtXY !== -1 && adjacentNbIdx.indexOf(nbAtXY) === -1) {
                     this.symbols[idxSymb][NB_ADJACENT]++;
                     this.symbols[idxSymb][PROD_NB_ADJACENT] *= this.numbers[nbAtXY][VALUE];
                     adjacentNbIdx.push(nbAtXY);
@@ -105,8 +100,8 @@ class DataProcessor {
     }
 
     numberAt(x, y) {
-        for(let nbIdx in this.numbers) {
-            if(this.numbers[nbIdx][Y] == y && this.numbers[nbIdx][Xs].indexOf(x) !== -1) {
+        for (let nbIdx in this.numbers) {
+            if (this.numbers[nbIdx][Y] == y && this.numbers[nbIdx][Xs].indexOf(x) !== -1) {
                 return parseInt(nbIdx, 10);
             }
         }
@@ -116,18 +111,18 @@ class DataProcessor {
     // Just keep in memory two lines - the current one and the one above
     emptyUnusedLines() {
         const ym = this.currY - 1;
-        let nbIdxToRm = []
-        let sbIdxToRm = []
+        let nbIdxToRm = [];
+        let sbIdxToRm = [];
 
-        for(let nbIdx in this.numbers) {
-            if(this.numbers[nbIdx][Y] < ym) {
+        for (let nbIdx in this.numbers) {
+            if (this.numbers[nbIdx][Y] < ym) {
                 nbIdxToRm.push(nbIdx);
             }
         }
 
-        for(let sbIdx in this.symbols) {
-            if(this.symbols[sbIdx][Y] < ym ) {
-                if(this.symbols[sbIdx][CAR] === '*' && this.symbols[sbIdx][NB_ADJACENT] === 2) {
+        for (let sbIdx in this.symbols) {
+            if (this.symbols[sbIdx][Y] < ym) {
+                if (this.symbols[sbIdx][CAR] === "*" && this.symbols[sbIdx][NB_ADJACENT] === 2) {
                     this.sumGears += this.symbols[sbIdx][PROD_NB_ADJACENT];
                 }
                 sbIdxToRm.push(sbIdx);
@@ -140,8 +135,8 @@ class DataProcessor {
     }
 
     computeRestOfLinesForGearsRatio() {
-        for(let sbIdx in this.symbols) {
-            if(this.symbols[sbIdx][CAR] === '*' && this.symbols[sbIdx][NB_ADJACENT] === 2) {
+        for (let sbIdx in this.symbols) {
+            if (this.symbols[sbIdx][CAR] === "*" && this.symbols[sbIdx][NB_ADJACENT] === 2) {
                 this.sumGears += this.symbols[sbIdx][PROD_NB_ADJACENT];
             }
         }
@@ -157,7 +152,7 @@ class DataProcessor {
 
     removeFromList(list, idxToRm) {
         let nbRm = 0;
-        for(let snToRm of idxToRm) {
+        for (let snToRm of idxToRm) {
             list.splice(snToRm - nbRm, 1);
             nbRm++;
         }
@@ -169,26 +164,25 @@ class DataProcessor {
 
     print() {
         console.log("Numbers :");
-        for(let nb of this.numbers) {
+        for (let nb of this.numbers) {
             console.log(nb);
         }
 
         console.log("Symbols :");
-        for(let sb of this.symbols) {
+        for (let sb of this.symbols) {
             console.log(sb);
         }
     }
 }
 
 (async () => {
-
     const rl = readline.createInterface(fs.createReadStream("./input.txt"));
 
-    const dp = new DataProcessor()
+    const dp = new DataProcessor();
 
-    rl.on("line", line => {
+    rl.on("line", (line) => {
         dp.processLine(line);
-    }); 
+    });
 
     await events.once(rl, "close");
 

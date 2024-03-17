@@ -12,13 +12,13 @@ function nextSequence(val) {
     let newSeq = "";
     let uniqueCarSeq = "";
 
-    for(let car of val) {
-        if(uniqueCarSeq.length === 0) {
+    for (let car of val) {
+        if (uniqueCarSeq.length === 0) {
             uniqueCarSeq = car;
             continue;
         }
 
-        if(car !== uniqueCarSeq[0]) {
+        if (car !== uniqueCarSeq[0]) {
             newSeq += `${uniqueCarSeq.length}${uniqueCarSeq[0]}`;
             uniqueCarSeq = car;
         } else {
@@ -26,19 +26,18 @@ function nextSequence(val) {
         }
     }
 
-    if(uniqueCarSeq.length !== 0)
-        newSeq += `${uniqueCarSeq.length}${uniqueCarSeq[0]}`;
+    if (uniqueCarSeq.length !== 0) newSeq += `${uniqueCarSeq.length}${uniqueCarSeq[0]}`;
 
     return newSeq;
 }
 
-for(let turn = 1; turn <= NB_TURN_V1; turn++) {
+for (let turn = 1; turn <= NB_TURN_V1; turn++) {
     gameString1 = nextSequence(gameString1);
 }
 
 let gameString2 = gameStart;
 
-for(let turn = 1; turn <= NB_TURN_V2; turn++) {
+for (let turn = 1; turn <= NB_TURN_V2; turn++) {
     gameString2 = nextSequence(gameString2);
 }
 

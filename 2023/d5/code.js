@@ -7,29 +7,30 @@ const RANGE = 2;
 function extractSeedInfo(seedData) {
     const splt = seedData.split(" ").slice(1);
 
-    return splt.map((v) => { return parseInt(v, 10); });
+    return splt.map((v) => {
+        return parseInt(v, 10);
+    });
 }
 
 function extractSeedRangeInfo(seedData) {
     const seedInfo = extractSeedInfo(seedData);
 
     let res = [];
-    for(let seedIdx = 0; seedIdx < seedInfo.length; seedIdx += 2) {
-        res.push([seedInfo[seedIdx], seedInfo[seedIdx+1]]);
-    }  
+    for (let seedIdx = 0; seedIdx < seedInfo.length; seedIdx += 2) {
+        res.push([seedInfo[seedIdx], seedInfo[seedIdx + 1]]);
+    }
 
     return res;
 }
 
 function extractMap(mapInfo) {
-
     const mapFromTo = mapInfo[0].split("-to-");
     const from = mapFromTo[0].trim();
     const to = mapFromTo[1].split(" ")[0].trim();
 
     let mapping = [];
 
-    for(let mapInfoIdx = 1; mapInfoIdx < mapInfo.length; mapInfoIdx++) {
+    for (let mapInfoIdx = 1; mapInfoIdx < mapInfo.length; mapInfoIdx++) {
         const splt = mapInfo[mapInfoIdx].split(" ");
 
         const destRangeStart = parseInt(splt[0], 10);
@@ -43,12 +44,12 @@ function extractMap(mapInfo) {
         src: from,
         dest: to,
         ranges: mapping,
-    }
+    };
 }
 
 function findSrcInMap(src, maps) {
-    for(let map of maps) {
-        if(map.src === src) {
+    for (let map of maps) {
+        if (map.src === src) {
             return map;
         }
     }
@@ -57,8 +58,8 @@ function findSrcInMap(src, maps) {
 }
 
 function getMappingDestValue(map, srcValue) {
-    for(let table of map.ranges) {
-        if(srcValue >= table[SRC] && srcValue < (table[SRC] + table[RANGE])) {
+    for (let table of map.ranges) {
+        if (srcValue >= table[SRC] && srcValue < table[SRC] + table[RANGE]) {
             return table[DEST] + (srcValue - table[SRC]);
         }
     }
@@ -70,16 +71,16 @@ function find(seeds, maps, dest) {
     let currSrc = "seed";
     let currSrcIds = seeds;
 
-    while(currSrc !== dest) {
+    while (currSrc !== dest) {
         const map = findSrcInMap(currSrc, maps);
 
-        if(!map) {
+        if (!map) {
             break;
         }
 
-        for(let currSrcIdx = 0; currSrcIdx < currSrcIds.length; currSrcIdx++) {
-            const currSrcId = currSrcIds[currSrcIdx]
-            currSrcIds[currSrcIdx] = getMappingDestValue(map, currSrcId)
+        for (let currSrcIdx = 0; currSrcIdx < currSrcIds.length; currSrcIdx++) {
+            const currSrcId = currSrcIds[currSrcIdx];
+            currSrcIds[currSrcIdx] = getMappingDestValue(map, currSrcId);
         }
 
         currSrc = map.dest;
@@ -91,10 +92,10 @@ function find(seeds, maps, dest) {
 function findMinWithSeedRange(seedRanges, maps, dest) {
     let minDest = Infinity;
 
-    for(let seedRange of seedRanges) {
-        for(let seedIdx = 0; seedIdx < seedRange[1]; seedIdx++) {
+    for (let seedRange of seedRanges) {
+        for (let seedIdx = 0; seedIdx < seedRange[1]; seedIdx++) {
             const currDest = find([seedRange[0] + seedIdx], maps, dest)[0];
-            if(minDest > currDest) {
+            if (minDest > currDest) {
                 minDest = currDest;
             }
         }
@@ -104,17 +105,16 @@ function findMinWithSeedRange(seedRanges, maps, dest) {
 }
 
 fs.readFile("./input.txt", "utf8", (err, data) => {
-
-    if(err) {
+    if (err) {
         throw err;
     }
 
-    let datasplt = data.split("\n").filter(d => d.length > 0);
+    let datasplt = data.split("\n").filter((d) => d.length > 0);
 
     const dataMaps = [];
     let idxSplt = 0;
 
-    while((idxSplt = datasplt.indexOf('')) !== -1) {
+    while ((idxSplt = datasplt.indexOf("")) !== -1) {
         dataMaps.push(datasplt.splice(0, idxSplt++));
         datasplt.splice(0, 1); // removes the trailing space
     }
@@ -125,7 +125,7 @@ fs.readFile("./input.txt", "utf8", (err, data) => {
 
     const maps = [];
 
-    for(let dataMapIdx = 1; dataMapIdx < dataMaps.length; dataMapIdx++) {
+    for (let dataMapIdx = 1; dataMapIdx < dataMaps.length; dataMapIdx++) {
         maps.push(extractMap(dataMaps[dataMapIdx]));
     }
 
@@ -138,5 +138,4 @@ fs.readFile("./input.txt", "utf8", (err, data) => {
     const seedRanges = extractSeedRangeInfo(dataMaps[0][0]);
 
     console.log(`Solution 2 : ${findMinWithSeedRange(seedRanges, maps, "location")}`);
-
 });

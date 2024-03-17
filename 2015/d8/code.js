@@ -7,16 +7,16 @@ function processString(str) {
     let currNbInMemCar = 0;
     let nbCarEncoded = 6;
 
-    while(currNbCar < str.length-1) {
+    while (currNbCar < str.length - 1) {
         const currCar = str[currNbCar++];
 
-        if(["\\", "\""].indexOf(currCar) !== -1) {
+        if (["\\", '"'].indexOf(currCar) !== -1) {
             nbCarEncoded += 2;
             const nextCar = str[currNbCar++];
-            if(nextCar == 'x') {
-                nbCarEncoded += 2
-                currNbCar += 2
-            } else if(nextCar == '\\' || nextCar == '\"') {
+            if (nextCar == "x") {
+                nbCarEncoded += 2;
+                currNbCar += 2;
+            } else if (nextCar == "\\" || nextCar == '"') {
                 nbCarEncoded++;
             }
         }
@@ -25,12 +25,13 @@ function processString(str) {
         currNbInMemCar++;
     }
 
-    return [str.length, currNbInMemCar, nbCarEncoded]
+    return [str.length, currNbInMemCar, nbCarEncoded];
 }
 
 (async () => {
-
-    const rl = readline.createInterface({ input: fs.createReadStream("./input.txt") });
+    const rl = readline.createInterface({
+        input: fs.createReadStream("./input.txt"),
+    });
 
     let nbTotCar = 0;
     let nbTotCarInMem = 0;
@@ -45,7 +46,6 @@ function processString(str) {
 
     await events.once(rl, "close");
 
-    console.log(`Solution 1 : ${nbTotCar - nbTotCarInMem}`)
-    console.log(`Solution 2 : ${nbTotCarEncoded - nbTotCar}`)
-
+    console.log(`Solution 1 : ${nbTotCar - nbTotCarInMem}`);
+    console.log(`Solution 2 : ${nbTotCarEncoded - nbTotCar}`);
 })();
