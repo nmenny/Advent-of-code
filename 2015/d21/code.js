@@ -207,8 +207,8 @@ function battle(player1, player2) {
         step++;
     }
 
-    if (LOG_ENABLED && player1.hp > 0) console.log(`${player1.id} won after ${step} turns !!`);
-    if (LOG_ENABLED && player2.hp > 0) console.log(`${player2.id} won after ${step} turns !!`);
+    const winner = player1.hp > 0 ? player1 : player2;
+    if (LOG_ENABLED) console.log(`${winner.id} won after ${step} turns !!`);
 
     if (LOG_ENABLED) console.log("******** Battle End ********");
 
@@ -346,5 +346,4 @@ for (const eqpm of theEquipement) {
 }
 
 console.log(`Solution 1 : ${explorePossibilites(player, boss, shop)}`);
-
 console.log(`Solution 2 : ${explorePossibilites2(player, boss, shop)}`);
