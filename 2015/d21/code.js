@@ -215,14 +215,16 @@ function battle(player1, player2) {
     return !player1Play;
 }
 
-function explorePossibilites(player1, player2, shop) {
-    let minExpenses = Infinity;
+function explorePossibilites(player1, player2, shop, searchMin) {
+    const computeExpenses = searchMin ? Math.min : Math.max;
+
+    let expenses = searchMin ? Infinity : -1;
 
     if (player1.isFull()) {
         if (battle(player1, player2)) {
-            return player1.expenses;
+            return searchMin ? player1.expenses : -1;
         } else {
-            return Infinity;
+            return searchMin ? Infinity : player1.expenses;
         }
     }
 
@@ -232,58 +234,12 @@ function explorePossibilites(player1, player2, shop) {
             const tmpShop = shop.copy();
             tmpP1.equip(tmpShop.sell(weapon.id));
 
-            minExpenses = Math.min(minExpenses, explorePossibilites(tmpP1, player2, tmpShop));
+            expenses = computeExpenses(expenses, explorePossibilites(tmpP1, player2, tmpShop, searchMin));
             player2.restoreHealth();
         }
     } else {
         if (LOG_ENABLED) console.log(player1.toString());
-        if (battle(player1, player2)) return player1.expenses;
-        player1.restoreHealth();
-        player2.restoreHealth();
-
-        for (const eqpm of shop.items) {
-            const tmpP1 = player1.copy();
-            const tmpShop = shop.copy();
-            if (eqpm.cat === EquipmentCategories.Weapon) continue;
-            else if (eqpm.cat === EquipmentCategories.Armor && player1.hasArmor()) continue;
-            else if (eqpm.cat === EquipmentCategories.Ring && player1.hasEnoughRings()) continue;
-            else if (
-                (eqpm.cat === EquipmentCategories.Armor && !player1.hasArmor()) ||
-                (eqpm.cat === EquipmentCategories.Ring && !player1.hasEnoughRings())
-            ) {
-                tmpP1.equip(tmpShop.sell(eqpm.id));
-                minExpenses = Math.min(minExpenses, explorePossibilites(tmpP1, player2, tmpShop));
-                player2.restoreHealth();
-            }
-        }
-    }
-
-    return minExpenses;
-}
-
-function explorePossibilites2(player1, player2, shop) {
-    let maxExpenses = -1;
-
-    if (player1.isFull()) {
-        if (!battle(player1, player2)) {
-            return player1.expenses;
-        } else {
-            return -1;
-        }
-    }
-
-    if (!player1.hasWeapon()) {
-        for (const weapon of shop.weapons) {
-            const tmpP1 = player1.copy();
-            const tmpShop = shop.copy();
-            tmpP1.equip(tmpShop.sell(weapon.id));
-
-            maxExpenses = Math.max(maxExpenses, explorePossibilites2(tmpP1, player2, tmpShop));
-            player2.restoreHealth();
-        }
-    } else {
-        if (LOG_ENABLED) console.log(player1.toString());
-        if (battle(player1, player2)) return -1;
+        if (battle(player1, player2)) return searchMin ? player1.expenses : -1;
         player1.restoreHealth();
         player2.restoreHealth();
 
@@ -300,13 +256,13 @@ function explorePossibilites2(player1, player2, shop) {
             ) {
                 tmpP1.equip(tmpShop.sell(eqpm.id));
 
-                maxExpenses = Math.max(maxExpenses, explorePossibilites2(tmpP1, player2, tmpShop));
+                expenses = computeExpenses(expenses, explorePossibilites(tmpP1, player2, tmpShop, searchMin));
                 player2.restoreHealth();
             }
         }
     }
 
-    return maxExpenses;
+    return expenses;
 }
 
 const theEquipement = [
@@ -345,5 +301,5 @@ for (const eqpm of theEquipement) {
     shop.addItem(eqpm);
 }
 
-console.log(`Solution 1 : ${explorePossibilites(player, boss, shop)}`);
-console.log(`Solution 2 : ${explorePossibilites2(player, boss, shop)}`);
+console.log(`Solution 1 : ${explorePossibilites(player, boss, shop, true)}`);
+console.log(`Solution 2 : ${explorePossibilites(player, boss, shop, false)}`);
